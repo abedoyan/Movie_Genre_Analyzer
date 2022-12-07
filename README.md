@@ -167,6 +167,10 @@ After the code was initially completed, I ran 10 additional movie scripts to che
 
 Ultimately, the program did what I expected it to. I took as input a movie script and printed out its top genres based on that script’s similarity to other movies. The program does not perform perfectly, but as with all new endeavors, it will take time and various iterations to improve and advance. 
 
+
+![image](https://user-images.githubusercontent.com/111945641/206090707-1b3f69ad-e2bc-4379-bc43-6503c2ce24e1.png)
+
+
 # Where to Go From Here:
 I had originally hoped to be able to create a website that would act as a movie genre generator and script database. As I researched different methods to approach my project, I realized that time restrictions would not permit me to be able to create the front-facing application that I had initially envisioned. However, I think this remains as an interesting next step and may reapproach the topic as a side project in the future.
 
