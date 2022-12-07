@@ -1,6 +1,8 @@
 # CS410 Course Project - Movie Genre Analysis
 Arda Bedoyan
 
+Video Link: https://uofi.box.com/s/x2yxr600eq8snoplf5nqmok4qjwgwig9
+
 # Overview:
 This program is meant to help users determine the genre of a movie. It works by taking in as input a movie script and then printing out up to three genres that the movie falls under. The code is based on an input document’s similarity to documents in an already established collection of documents.
 
