@@ -26,7 +26,9 @@ The program works by first initializing a training set of movie scripts. This tr
 
 I chose these 15 movies because I thought they exemplified their corresponding genre well. Additionally, not every movie script can be found online, so I had to eliminate some chosen movies whose scripts could not be found. The scripts for these movies in addition to movies that I ran through the program to determine their genres were saved into text files. If you would like to run the program for a movie that does not have a corresponding text file saved in this repository, please copy and paste the script into a text file and name the file the same name as you will enter into the program. If you notice that the program gives you some errors when trying to read in the text files, please change the encoding type of the text file from UTF-8 to ANSI.
 
-Please import the necessary libraries below.
+The code for the program is in the Python file, Movie_Genre_Analyzer.py. The remaining text files are movie scripts and a stop words file.
+
+The code imports the necessary libraries below.
 ~~~
 import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
