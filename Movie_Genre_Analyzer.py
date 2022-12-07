@@ -3,6 +3,8 @@
 ## Arda Bedoyan
 ## Fall 20222
 
+## Source: https://radimrehurek.com/gensim/index.html
+
 import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 from collections import defaultdict
@@ -36,6 +38,8 @@ genre_results = {}
 start = 'y'
 
 # Function to run the genre analysis using similarity queries #
+# Based off of similarity query documentation from Gensim
+# https://radimrehurek.com/gensim/auto_examples/core/run_similarity_queries.html#sphx-glr-auto-examples-core-run-similarity-queries-py
 def genre_analysis():
     documents = []
     key_count = 0
