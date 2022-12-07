@@ -11,7 +11,11 @@ The program uses the Gensim toolkit (https://radimrehurek.com/gensim/index.html)
 
 Gensim runs on Linux, Windows and Mac OS X, and should run on any other platform that supports Python and NumPy. The documentation says that Gensim is tested with Python 3.6, 3.7, and 3.8. I used Python 3.8.7 on a Windows computer.
 
-Begin by running "pip install --upgrade gensim" in your terminal. If you encounter any trouble, please check what version of Python you have installed. I encountered some errors installing Gensim when running on Python 3.11, and therefore downloaded Python 3.8. Afterwards, the errors stopped and I was successfully able to install Gensim. Once installation is done, no further setup needs to be done.
+In your terminal, begin by running:
+~~~
+pip install --upgrade gensim
+~~~
+If you encounter any trouble, please check what version of Python you have installed. I encountered some errors installing Gensim when running on Python 3.11, and therefore downloaded Python 3.8. Afterwards, the errors stopped and I was successfully able to install Gensim. Once installation is done, no further setup needs to be done.
 
 How the Code Works:
 The program works by first initializing a training set of movie scripts. This training set includes 15 movies across five genres. The five I chose for this project were Action, Comedy, Drama, Romance, and Horror. These genres were chosen so as not to have too many options. Additionally, it can be argued that most other genres are combinations or sub-genres of these five genres. The training set of movies included the movies in the table below.
@@ -23,13 +27,132 @@ The program works by first initializing a training set of movie scripts. This tr
 I chose these 15 movies because I thought they exemplified their corresponding genre well. Additionally, not every movie script can be found online, so I had to eliminate some chosen movies whose scripts could not be found. The scripts for these movies in addition to movies that I ran through the program to determine their genres were saved into text files. If you would like to run the program for a movie that does not have a corresponding text file saved in this repository, please copy and paste the script into a text file and name the file the same name as you will enter into the program. If you notice that the program gives you some errors when trying to read in the text files, please change the encoding type of the text file from UTF-8 to ANSI.
 
 Please import the necessary libraries below.
-
-![image](https://user-images.githubusercontent.com/111945641/206089411-b15fba98-25a3-4a2c-ba81-02ccb3d2ec95.png)
-
+~~~
+import logging
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+from collections import defaultdict
+from gensim import corpora
+from gensim import models
+from gensim import similarities
+from pathlib import Path
+~~~
 
 The genre_analysis() function is where the analysis truly takes place. It reads in all of the movie script from the training set, removes common words, and tokenizes the documents. It then removes words that only occur once. A corpus is created that consists of all of the pre-processed scripts.
 
 The Vector Space Model algorithm used in this code is Latent Semantic Indexing (LSI), sometimes referred to as Latent Semantic Analysis (LSA). The LSI code I implemented was based off of the code from the Gensim documentation (https://tinyurl.com/2vrvvejf). LSI transforms documents from either a bag-of-words or Tf-Idf-weighted space, into a latent space of a lower dimensionality. According to Gensim documentation, dimensionality of 200–500 is recommended as the gold standard. I chose to use 300, which worked equally well as 200, 400, and 500. However 300 worked much better than a smaller number of features, such as 2-5.
+
+~~~
+# Function to run the genre analysis using similarity queries #
+def genre_analysis():
+    documents = []
+    key_count = 0
+
+    # read in the movie scripts
+    # the names of the txt files of the scripts should match the names in movie_graph
+    while (key_count < len(keys)):
+        movie = Path(keys[key_count] + '.txt').read_text()
+        documents.append(movie)
+        key_count += 1
+
+    # remove common words and tokenize
+    stoplist = set(line.strip() for line in open('stop_words.txt'))
+
+    texts = [
+        [word for word in document.lower().split() if word not in stoplist]
+        for document in documents
+    ]
+
+    # remove words that appear only once
+    frequency = defaultdict(int)
+    for text in texts:
+        for token in text:
+            frequency[token] += 1
+
+    texts = [
+        [token for token in text if frequency[token] > 1]
+        for text in texts
+    ]
+
+    # create a corpus of all of the documents
+    dictionary = corpora.Dictionary(texts)
+    corpus = [dictionary.doc2bow(text) for text in texts]
+
+    # create an LSI model
+    # LSI = Latent Semantic Indexing
+    # Transforms documents from either bag-of-words or TfIdf-weighted space
+    # into a latent space of a lower dimensionality.
+    lsi = models.LsiModel(corpus, id2word=dictionary, num_topics=300)
+
+    # read in the movie script to run genre analysis on
+    doc = Path(new_movie + '.txt').read_text()
+    doc = [word for word in doc.lower().split() if word not in stoplist]
+
+    # convert the query to LSI space
+    vec_bow = dictionary.doc2bow(doc)
+    vec_lsi = lsi[vec_bow]  
+    #print(vec_lsi)
+
+    # transform corpus to LSI space and index it
+    index = similarities.MatrixSimilarity(lsi[corpus])
+
+    # perform a similarity query against the corpus
+    sims = index[vec_lsi]
+
+    # sort the results
+    sims = sorted(enumerate(sims), key=lambda item: -item[1])
+
+    # get the top three movies based on similarity
+    top_choice = sims[0]
+    second_choice = sims[1]
+    third_choice = sims[2]
+
+    # get the top three genres based on top three movies
+    for doc_position, doc_score in sims:
+        print(doc_score, "Movie:", list(movie_graph.keys())[doc_position])
+        if doc_position == top_choice[0]:
+            genre1 = list(movie_graph.values())[doc_position]
+        elif doc_position == second_choice[0]:
+            genre2 = list(movie_graph.values())[doc_position]
+        elif doc_position == third_choice[0]:
+            genre3 = list(movie_graph.values())[doc_position]
+
+
+    # print out the results and remove duplicate genres
+    print("\nGenres: ", end="")
+
+    count = 1
+    while(count < 4):
+        if (count == 1):
+            print(genre1 + " ", end="")
+        if (count == 2 and genre2 != genre1):
+            print(genre2 + " ", end="")
+        if (count == 3 and genre3 != genre1 and genre3 != genre2):
+            print (genre3)
+        count +=1
+
+    print()
+
+    temp_list = []
+    genres = [genre1, genre2, genre3]
+
+    for genre in genres:
+        if genre not in temp_list:
+            temp_list.append(genre)
+
+
+    # add results to the genre_results directory
+    genre_results[new_movie] = set(temp_list)
+    movie_graph[new_movie] = genre1
+
+    # check with user if the resulting genres are a good match for the movie
+    # if not, manually enter genres to improve system
+    human_input = input('Are these genres correct? (y/n) \n')
+    if (human_input == 'n'):
+        human_genre = input("What is the main genre? \n")
+        movie_graph[new_movie] = human_genre
+        human_genre2 = input("What is the second genre the movie falls under? \n")
+        genre_results[new_movie] = set([human_genre2, human_genre])
+~~~
 
 After the model is run, the results are sorted and the genres corresponding to the top three movies most similar to the inputted movie script are gathered. After de-duplicating any repeated genres, the program prints out the results of the genre analysis and adds the new genres to not only the training set but also a new dictionary of results that contains the movie title and its top genres. 
 
