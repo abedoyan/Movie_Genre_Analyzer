@@ -1,4 +1,4 @@
-# CS410 Course Project - Movie Genre Analysis
+# Movie Genre Analysis
 Arda Bedoyan
 
 Video Link: https://uofi.box.com/s/x2yxr600eq8snoplf5nqmok4qjwgwig9
